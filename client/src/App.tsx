@@ -50,7 +50,13 @@ function App() {
   };
 
   const editTask = async (id) => {
+    const taskToEdit = tasksList.filter((task) => task.id === id);
+    setForm(taskToEdit[0]);
+    setFormVisibility(true);
+    console.log("Task to edit: ", taskToEdit);
+
     try {
+      const editTask = axios.patch("/tasks/:id", form);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
@@ -74,6 +80,7 @@ function App() {
           setFormVisibility={setFormVisibility}
           createTask={createTask}
           setForm={setForm}
+          form={form}
         />
       )}
       <button

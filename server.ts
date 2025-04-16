@@ -50,7 +50,6 @@ app.get("/", (req, res) => {
 
 app.post("/tasks", (req, res) => {
   const { title, description, status, due } = req.body;
-  console.log(title, description, status, due);
 
   db.run(
     "INSERT INTO tasks_table (title, description, status, due) VALUES (?, ?, ?, ?)",
@@ -73,8 +72,14 @@ app.post("/tasks", (req, res) => {
   );
 });
 
+app.patch("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  db.run("");
+});
+
 app.delete("/tasks/:id", (req, res) => {
   const { id } = req.params;
+  const { title, description, status, due } = req.body;
   db.run("DELETE FROM tasks_table WHERE id = ?", id, function (err) {
     if (err) {
       return res.status(500).json({ error: `Error deleting task: ${err}` });

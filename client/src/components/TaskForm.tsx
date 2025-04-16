@@ -3,12 +3,14 @@ interface TaskFormProps {
   setFormVisibility: React.Dispatch<React.SetStateAction<boolean>>;
   createTask: (e: React.FormEvent) => Promise<void>;
   setForm: React.Dispatch<React.SetStateAction<Task>>;
+  form: Task;
 }
 
 const TaskForm = ({
   setFormVisibility,
   createTask,
   setForm,
+  form,
 }: TaskFormProps) => {
   const handleFormInputs = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -27,6 +29,7 @@ const TaskForm = ({
           </label>
           <input
             onChange={handleFormInputs}
+            value={form.title}
             type="text"
             placeholder="Title"
             name="title"
@@ -40,6 +43,7 @@ const TaskForm = ({
           </label>
           <input
             onChange={handleFormInputs}
+            value={form.description}
             type="text"
             placeholder="Description"
             name="description"
@@ -52,6 +56,7 @@ const TaskForm = ({
           </label>
           <input
             onChange={handleFormInputs}
+            value={form.status}
             type="text"
             placeholder="Status"
             name="status"
@@ -65,6 +70,7 @@ const TaskForm = ({
           </label>
           <input
             onChange={handleFormInputs}
+            value={form.due}
             type="text"
             placeholder="Due Date/Time"
             name="due"
