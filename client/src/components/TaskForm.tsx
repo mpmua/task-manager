@@ -1,16 +1,8 @@
-import { useState } from "react";
-
+import { Task } from "../utils/types";
 interface TaskFormProps {
   setFormVisibility: React.Dispatch<React.SetStateAction<boolean>>;
   createTask: (e: React.FormEvent) => Promise<void>;
-  setForm: React.Dispatch<
-    React.SetStateAction<{
-      title: string;
-      description: string;
-      status: string;
-      due: string;
-    }>
-  >;
+  setForm: React.Dispatch<React.SetStateAction<Task>>;
 }
 
 const TaskForm = ({
@@ -81,12 +73,7 @@ const TaskForm = ({
           />
         </div>
         <section className="text-right">
-          <button
-            // onClick={createTask}
-            className="mr-4"
-          >
-            Submit
-          </button>
+          <button className="mr-4">Submit</button>
           <button
             onClick={() => {
               setFormVisibility(false);

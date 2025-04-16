@@ -12,9 +12,11 @@ app.listen(PORT, () => {
 });
 
 const db = new sqlite3.Database("./tasks.db", (err) => {
-  err
-    ? console.error("DB Error: ", err.message)
-    : console.log("Connected to sqlite database");
+  if (err) {
+    console.error("DB Error: ", err.message);
+    process.exit(1);
+  }
+  console.log("Connected to sqlite database");
 });
 
 db.run(
@@ -26,14 +28,25 @@ db.run(
   due TEXT NOT NULL
   )`,
   (err) => {
-    err
-      ? console.log("Error creating table: ", err.message)
-      : console.log("Tasks table created successfully");
+    if (err) {
+      console.error("DB Error: ", err.message);
+      process.exit(1);
+    }
+    console.log("Created database succesfully");
   }
 );
 
 app.get("/", (req, res) => {
-  res.send(`API is up and running! ${req.body}`);
+  console.log("HERE");
+  db.all("SELECT * FROM tasks_table", (err, rows) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ error: `Error fetching data from DB: ${err}` });
+    }
+
+    res.status(200).json({ tasksList: rows });
+  });
 });
 
 app.post("/tasks", (req, res) => {
@@ -45,7 +58,9 @@ app.post("/tasks", (req, res) => {
     [title, description, status, due],
     function (err) {
       if (err) {
-        return res.status(500).json({ error: "Error creating task: ", err });
+        return res
+          .status(500)
+          .json({ error: `Error creating task: ${err.message}` });
       }
 
       res.status(201).json({
