@@ -18,21 +18,23 @@ const TaskForm = ({
   createTask,
   setForm,
 }: TaskFormProps) => {
+  const handleFormInputs = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   return (
     <>
       {" "}
       <form
         onSubmit={createTask}
-        className="w-1/2 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-stone-700 rounded-2xl "
+        className="absolute w-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 bg-stone-700 rounded-2xl "
       >
         <div>
           <label htmlFor="title">
             <b>Title</b>
           </label>
           <input
-            onChange={(e) => {
-              setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-            }}
+            onChange={handleFormInputs}
             type="text"
             placeholder="Title"
             name="title"
@@ -45,6 +47,7 @@ const TaskForm = ({
             <b>Description</b>
           </label>
           <input
+            onChange={handleFormInputs}
             type="text"
             placeholder="Description"
             name="description"
@@ -56,6 +59,7 @@ const TaskForm = ({
             <b>Status</b>
           </label>
           <input
+            onChange={handleFormInputs}
             type="text"
             placeholder="Status"
             name="status"
@@ -68,6 +72,7 @@ const TaskForm = ({
             <b>Due Date/Time</b>
           </label>
           <input
+            onChange={handleFormInputs}
             type="text"
             placeholder="Due Date/Time"
             name="due"

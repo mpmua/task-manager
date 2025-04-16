@@ -38,17 +38,14 @@ app.get("/", (req, res) => {
 
 app.post("/tasks", (req, res) => {
   const { title, description, status, due } = req.body;
+  console.log(title, description, status, due);
+
   db.run(
     "INSERT INTO tasks_table (title, description, status, due) VALUES (?, ?, ?, ?)",
     [title, description, status, due],
     function (err) {
       if (err) {
         return res.status(500).json({ error: "Error creating task: ", err });
-      }
-      if (!title || !status || !due) {
-        return res
-          .status(400)
-          .json({ error: "Title, status, and due date are required" });
       }
 
       res.status(201).json({

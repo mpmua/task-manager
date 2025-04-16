@@ -10,7 +10,7 @@ type task = {
 };
 
 function App() {
-  const [tasks, setTasks] = useState<task[]>([]);
+  const [tasksList, setTasksList] = useState<task[]>([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -27,10 +27,12 @@ function App() {
   const API = "http://localhost:4000/";
 
   const createTask = async (e: React.FormEvent) => {
+    console.log("CREATE TASK TRIGGERED");
+
     e.preventDefault();
     try {
-      const res = await axios.post(`${API}/${tasks}`, form);
-      console.log("res: ", res);
+      const res = await axios.post(`${API}/tasks`, form);
+      console.log("form: ", form);
     } catch (error) {
       console.log("Error creating task: ", error);
     }
@@ -62,7 +64,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => {
+          {tasksList.map((task) => {
             return (
               <tr>
                 <td>{task.title}</td>
