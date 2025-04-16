@@ -44,7 +44,6 @@ app.get("/", (req, res) => {
         .status(500)
         .json({ error: `Error fetching data from DB: ${err}` });
     }
-
     res.status(200).json({ tasksList: rows });
   });
 });
@@ -58,9 +57,9 @@ app.post("/tasks", (req, res) => {
     [title, description, status, due],
     function (err) {
       if (err) {
-        return res
-          .status(500)
-          .json({ error: `Error creating task: ${err.message}` });
+        return res.status(500).json({
+          error: `Error creating task: ${err.message}`,
+        });
       }
 
       res.status(201).json({
@@ -72,4 +71,17 @@ app.post("/tasks", (req, res) => {
       });
     }
   );
+});
+
+app.delete("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM tasks_table WHERE id = ?", id, function (err) {
+    if (err) {
+      return res.status(500).json({ error: `Error deleting task: ${err}` });
+    }
+    res.status(200).json({
+      success: true,
+      message: `Task with ID of ${id} deleted successfully`,
+    });
+  });
 });

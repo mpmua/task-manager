@@ -49,6 +49,24 @@ function App() {
     }
   };
 
+  const editTask = async (id) => {
+    try {
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  };
+
+  const deleteTask = async (id) => {
+    try {
+      const deleteTask = await axios.delete(`${API}/tasks/${id}`);
+      console.log("Delete task: ", deleteTask);
+
+      setTasksList((prev) => prev.filter((task) => task.id !== id));
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
+  };
+
   return (
     <section className="">
       {formVisiblility && (
@@ -82,6 +100,22 @@ function App() {
                 <td>{task.description}</td>
                 <td>{task.status}</td>
                 <td>{task.due}</td>
+                <td>
+                  <i
+                    onClick={() => {
+                      editTask(task.id);
+                    }}
+                    className="fa-solid fa-pen"
+                  ></i>
+                </td>
+                <td>
+                  <i
+                    onClick={() => {
+                      deleteTask(task.id);
+                    }}
+                    className="fa-solid fa-trash"
+                  ></i>
+                </td>
               </tr>
             );
           })}
