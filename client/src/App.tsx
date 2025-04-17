@@ -80,7 +80,7 @@ function App() {
   };
 
   return (
-    <section className="">
+    <section className="bg-[#141e2f] flex flex-col justify-center items-center text-[#e4edfc] mt-[10vh]">
       {formVisiblility && (
         <form
           onSubmit={(e) => {
@@ -118,16 +118,13 @@ function App() {
           <div>
             <label htmlFor="status">
               <b>Status</b>
+              <select value={form.status} onChange={handleFormInputs}>
+                <option value="">Select Status</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Complete">Complete</option>
+              </select>
             </label>
-            <input
-              onChange={handleFormInputs}
-              value={form.status}
-              type="text"
-              placeholder="Status"
-              name="status"
-              required
-              className="mb-4"
-            />
           </div>
           <div>
             <label htmlFor="due">
@@ -156,31 +153,50 @@ function App() {
           </section>
         </form>
       )}
-      <button
-        onClick={() => {
-          setFormVisibility(true);
-        }}
-      >
-        Create Task
-      </button>
-      <section className="bg-[#363640] flex items-center h-full">
-        <table className="">
+
+      <section className="flex flex-col w-10/12 max-w-3xl">
+        <button
+          className="self-end w-1/4 p-2 mt-2 text-white bg-blue-600 rounded-lg"
+          onClick={() => {
+            setFormVisibility(true);
+          }}
+        >
+          Create Task
+        </button>
+        <table className="mt-5 text-center">
           <thead>
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th>Due Date/Time</th>
+            <tr className="text-sm">
+              <th className="w-1/6">TITLE</th>
+              <th className="w-2/6">DESCRIPTION</th>
+              <th className="w-1/6">STATUS</th>
+              <th className="w-1/6">DUE</th>
+              <th className="w-1/6"></th>
             </tr>
           </thead>
           <tbody>
             {tasksList.map((task) => {
               return (
-                <tr key={task.id}>
-                  <td>{task.title}</td>
+                <tr className="border-b border-stone-700" key={task.id}>
+                  <td className="">{task.title}</td>
                   <td>{task.description}</td>
                   <td>{task.status}</td>
-                  <td>{task.due}</td>
+                  <td>
+                    <div
+                      style={{
+                        backgroundColor:
+                          task.status === "Complete"
+                            ? "green"
+                            : task.status === "Pending"
+                            ? "yellow"
+                            : task.status === "In Progress"
+                            ? "amber"
+                            : "transparent",
+                      }}
+                      className="rounded-md "
+                    >
+                      {task.due}
+                    </div>
+                  </td>
                   <td>
                     <i
                       onClick={() => {
@@ -195,10 +211,8 @@ function App() {
                         setIsEditing(true);
                         setTaskId(task.id);
                       }}
-                      className="fa-solid fa-pen"
+                      className="pr-5 fa-solid fa-pen"
                     ></i>
-                  </td>
-                  <td>
                     <i
                       onClick={() => {
                         deleteTask(task.id);

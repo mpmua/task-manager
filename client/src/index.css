@@ -19,12 +19,21 @@
   }
 
   html {
-    font-family: sans-serif;
-    background-color: #424250;
+    background-color: #263345;
     /* color: #333; */
   }
   body {
-    height: 100vh;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+  }
+  /* html,
+  body,
+  #root {
+    height: 100%;
+  } */
+  th,
+  td {
+    padding: 1rem 0 1rem 0;
   }
 }
 
