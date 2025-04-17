@@ -37,12 +37,11 @@ db.run(
 );
 
 app.get("/", (req, res) => {
-  console.log("HERE");
   db.all("SELECT * FROM tasks_table", (err, rows) => {
     if (err) {
       return res
         .status(500)
-        .json({ error: `Error fetching data from DB: ${err}` });
+        .json({ error: `Error fetching data from DB: ${err.message}` });
     }
     res.status(200).json({ tasksList: rows });
   });
@@ -74,15 +73,27 @@ app.post("/tasks", (req, res) => {
 
 app.patch("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  db.run("");
+  const { title, description, status, due } = req.body;
+  const sqlStmnt =
+    "UPDATE tasks_table SET title = ?, description = ?, status = ?, due = ? WHERE id = ?";
+  db.run(sqlStmnt, [title, description, status, due, id], function (err) {
+    if (err) {
+      return res
+        .status(500)
+        .json({ error: `Error editing task with id ${id}: ${err.message}` });
+    }
+
+    res.status(200).json({ message: `Task with id ${id} edited successfully` });
+  });
 });
 
 app.delete("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { title, description, status, due } = req.body;
   db.run("DELETE FROM tasks_table WHERE id = ?", id, function (err) {
     if (err) {
-      return res.status(500).json({ error: `Error deleting task: ${err}` });
+      return res
+        .status(500)
+        .json({ error: `Error deleting task: ${err.message}` });
     }
     res.status(200).json({
       success: true,

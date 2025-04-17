@@ -3,7 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: sans-serif;
+    background-color: #424250;
+    /* color: #333; */
+  }
+  body {
+    height: 100vh;
+  }
+}
+
+/* * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -12,4 +37,4 @@
 body {
   background-color: #8989a0;
   max-width: 1200px;
-}
+} */
