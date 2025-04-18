@@ -83,7 +83,13 @@ app.patch("/tasks/:id", (req, res) => {
         .json({ error: `Error editing task with id ${id}: ${err.message}` });
     }
 
-    res.status(200).json({ message: `Task with id ${id} edited successfully` });
+    res.status(201).json({
+      id,
+      title,
+      description,
+      status,
+      due,
+    });
   });
 });
 

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import TaskForm from "./components/TaskForm";
 import { Task } from "./utils/types";
 
 function App() {
   const [tasksList, setTasksList] = useState<Task[]>([]);
+  const [formVisiblility, setFormVisibility] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [taskId, setTaskId] = useState<number | null>();
 
   const defaultFormState: Task = {
     id: 0,
@@ -13,11 +15,7 @@ function App() {
     status: "",
     due: "",
   };
-  const [form, setForm] = useState(defaultFormState);
-
-  const [formVisiblility, setFormVisibility] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [taskId, setTaskId] = useState<number | null>();
+  const [formData, setFormData] = useState(defaultFormState);
 
   const API = "http://localhost:4000";
 
@@ -40,13 +38,13 @@ function App() {
   const createTask = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post<Task>(`${API}/tasks`, form);
+      const res = await axios.post(`${API}/tasks`, formData);
       setTasksList((prev) => [...prev, res.data]);
     } catch (error) {
       console.log(`Error creating task: , ${error}`);
     } finally {
       setFormVisibility(false);
-      setForm(defaultFormState);
+      setFormData(defaultFormState);
     }
   };
 
@@ -54,21 +52,33 @@ function App() {
     e.preventDefault();
 
     try {
-      axios.patch(`${API}/tasks/${id}`, form);
+      const { data: editedTask } = await axios.patch(
+        `${API}/tasks/${id}`,
+        formData
+      );
+      console.log("editedTask: ", editedTask);
+      setTasksList((prev) =>
+        prev.map((item) =>
+          item.id === parseInt(editedTask.id) ? editedTask : item
+        )
+      );
     } catch (error) {
       console.log(`Error: ${error}`);
     } finally {
       setTaskId(null);
       setIsEditing(false);
       setFormVisibility(false);
-      setForm(defaultFormState);
+      setFormData(defaultFormState);
     }
   };
 
-  const deleteTask = async (id) => {
+  useEffect(() => {
+    console.log("Tasks list updated: ", tasksList);
+  }, [tasksList]);
+
+  const deleteTask = async (id: number) => {
     try {
-      const deleteTask = await axios.delete(`${API}/tasks/${id}`);
-      console.log("Delete task: ", deleteTask);
+      await axios.delete(`${API}/tasks/${id}`);
       setTasksList((prev) => prev.filter((task) => task.id !== id));
     } catch (error) {
       console.log(`Error: ${error}`);
@@ -76,7 +86,7 @@ function App() {
   };
 
   const handleFormInputs = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const inputStyles =
@@ -98,7 +108,7 @@ function App() {
             <input
               className={inputStyles}
               onChange={handleFormInputs}
-              value={form.title}
+              value={formData.title}
               type="text"
               placeholder="Title"
               name="title"
@@ -112,7 +122,7 @@ function App() {
             <input
               className={inputStyles}
               onChange={handleFormInputs}
-              value={form.description}
+              value={formData.description}
               type="text"
               placeholder="Description"
               name="description"
@@ -125,14 +135,14 @@ function App() {
             <select
               name="status"
               className={inputStyles}
-              value={form.status}
+              value={formData.status}
               onChange={handleFormInputs}
               required
             >
               <option value="" disabled>
                 -- Please select an option --
               </option>
-              <option value="Pending">Pending</option>
+              <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>
               <option value="Complete">Complete</option>
             </select>
@@ -145,7 +155,7 @@ function App() {
               type="datetime-local"
               className={inputStyles}
               onChange={handleFormInputs}
-              value={form.due}
+              value={formData.due}
               placeholder="Due Date/Time"
               name="due"
               required
@@ -156,7 +166,7 @@ function App() {
             <button
               onClick={() => {
                 setFormVisibility(false);
-                setForm(defaultFormState);
+                setFormData(defaultFormState);
               }}
             >
               Cancel
@@ -190,28 +200,26 @@ function App() {
                 <tr className="border-b border-stone-700" key={task.id}>
                   <td className="">{task.title}</td>
                   <td>{task.description}</td>
-                  <td>{task.status}</td>
                   <td>
                     <div
-                      style={{
-                        backgroundColor:
-                          task.status === "Complete"
-                            ? "green"
-                            : task.status === "Pending"
-                            ? "yellow"
-                            : task.status === "In Progress"
-                            ? "amber"
-                            : "transparent",
-                      }}
-                      className="rounded-md "
+                      className={`w-2/3 p-2 mx-auto rounded-2xl ${
+                        task.status === "Complete"
+                          ? "bg-green-200 text-green-800"
+                          : task.status === "Not Started"
+                          ? "bg-yellow-200 text-yellow-800"
+                          : task.status === "In Progress"
+                          ? "bg-amber-200 text-amber-800"
+                          : "bg-transparent"
+                      }`}
                     >
-                      {task.due}
+                      {task.status}
                     </div>
                   </td>
+                  <td className="rounded-md">{task.due}</td>
                   <td>
                     <i
                       onClick={() => {
-                        setForm({
+                        setFormData({
                           id: task.id,
                           title: task.title,
                           description: task.description,
