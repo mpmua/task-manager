@@ -50,7 +50,7 @@ function App() {
     }
   };
 
-  const editTask = async (id, e) => {
+  const editTask = async (id: number, e) => {
     e.preventDefault();
 
     try {
@@ -79,6 +79,9 @@ function App() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const inputStyles =
+    "py-2 pl-3 mb-4 transition border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";
+
   return (
     <section className="bg-[#141e2f] flex flex-col justify-center items-center text-[#e4edfc] mt-[10vh]">
       {formVisiblility && (
@@ -86,58 +89,66 @@ function App() {
           onSubmit={(e) => {
             isEditing ? editTask(taskId, e) : createTask(e);
           }}
-          className="absolute w-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 bg-stone-700 rounded-2xl "
+          className="absolute w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-stone-800 top-1/2 left-1/2 rounded-2xl "
         >
-          <div>
-            <label htmlFor="title">
-              <b>Title</b>
+          <div className="flex flex-col">
+            <label className="mb-1" htmlFor="title">
+              <b>TITLE (Required)</b>
             </label>
             <input
+              className={inputStyles}
               onChange={handleFormInputs}
               value={form.title}
               type="text"
               placeholder="Title"
               name="title"
               required
-              className="mb-4"
             />
           </div>
-          <div>
-            <label htmlFor="description">
-              <b>Description</b>
+          <div className="flex flex-col">
+            <label className="mb-1" htmlFor="description">
+              <b>Description (Optional)</b>
             </label>
             <input
+              className={inputStyles}
               onChange={handleFormInputs}
               value={form.description}
               type="text"
               placeholder="Description"
               name="description"
-              className="mb-4"
             />
           </div>
-          <div>
-            <label htmlFor="status">
-              <b>Status</b>
-              <select value={form.status} onChange={handleFormInputs}>
-                <option value="">Select Status</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Complete">Complete</option>
-              </select>
+          <div className="flex flex-col">
+            <label className="mb-1" htmlFor="status">
+              <b>Status (Required)</b>
             </label>
+            <select
+              name="status"
+              className={inputStyles}
+              value={form.status}
+              onChange={handleFormInputs}
+              required
+            >
+              <option value="" disabled>
+                -- Please select an option --
+              </option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Complete">Complete</option>
+            </select>
           </div>
-          <div>
-            <label htmlFor="due">
-              <b>Due Date/Time</b>
+          <div className="flex flex-col">
+            <label className="mb-1" htmlFor="due">
+              <b>Due Date/Time (Required)</b>
             </label>
             <input
+              type="datetime-local"
+              className={inputStyles}
               onChange={handleFormInputs}
               value={form.due}
-              type="text"
               placeholder="Due Date/Time"
               name="due"
               required
-              className="mb-4"
             />
           </div>
           <section className="text-right">
