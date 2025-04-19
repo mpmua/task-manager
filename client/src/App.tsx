@@ -85,6 +85,7 @@ function App() {
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLSelectElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -103,7 +104,7 @@ function App() {
           }}
           className="absolute text-[#3b3b3b] w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-[#cbcbcb] top-1/2 left-1/2 rounded-2xl"
         >
-          <div className="flex flex-col">
+          <div className="flex flex-col text-sm">
             <label className="mb-1" htmlFor="title">
               <b>TITLE (Required)</b>
             </label>
@@ -117,52 +118,54 @@ function App() {
               required
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col text-sm">
             <label className="mb-1" htmlFor="description">
               <b>Description (Optional)</b>
             </label>
-            <input
+            <textarea
               className={inputStyles}
               onChange={handleFormInputs}
               value={formData.description ?? ""}
-              type="text"
               placeholder="Description"
+              rows={4}
               name="description"
-            />
+            ></textarea>
           </div>
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="status">
-              <b>Status (Required)</b>
-            </label>
-            <select
-              name="status"
-              className={inputStyles}
-              value={formData.status}
-              onChange={handleFormInputs}
-              required
-            >
-              <option value="" disabled>
-                -- Please select an option --
-              </option>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Complete">Complete</option>
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <label className="mb-1" htmlFor="due">
-              <b>Due Date/Time (Required)</b>
-            </label>
-            <input
-              type="datetime-local"
-              className={inputStyles}
-              onChange={handleFormInputs}
-              value={formData.due}
-              placeholder="Due Date/Time"
-              name="due"
-              required
-            />
-          </div>
+          <section className="flex flex-wrap justify-between gap-4">
+            <div className="flex flex-col text-sm">
+              <label className="mb-1" htmlFor="status">
+                <b>Status (Required)</b>
+              </label>
+              <select
+                name="status"
+                className={inputStyles}
+                value={formData.status}
+                onChange={handleFormInputs}
+                required
+              >
+                <option value="" disabled>
+                  -- Please select an option --
+                </option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Complete">Complete</option>
+              </select>
+            </div>
+            <div className="flex flex-col text-sm">
+              <label className="mb-1" htmlFor="due">
+                <b>Due Date/Time (Required)</b>
+              </label>
+              <input
+                type="datetime-local"
+                className={inputStyles}
+                onChange={handleFormInputs}
+                value={formData.due}
+                placeholder="Due Date/Time"
+                name="due"
+                required
+              />
+            </div>
+          </section>
           <section className="text-right">
             <button className="mr-4">Submit</button>
             <button
@@ -219,8 +222,7 @@ function App() {
                       </p>
                     </td>
                     <td className="rounded-md">
-                      {new Date(task.due).toLocaleString()}
-                      {/* {task.due} */}
+                      {new Date(task.due).toLocaleString().replace(",", "")}
                     </td>
                     <td>
                       <i
