@@ -24,7 +24,7 @@ function App() {
       const response = await axios.get(`${API}/`);
       setTasksList(response.data.tasksList);
     } catch (error) {
-      console.log(`Error fetching tasks: ${error}`);
+      alert(`Error fetching tasks: ${error}`);
     }
   };
 
@@ -41,7 +41,7 @@ function App() {
       const res = await axios.post(`${API}/tasks`, formData);
       setTasksList((prev) => [...prev, res.data]);
     } catch (error) {
-      console.log(`Error creating task: , ${error}`);
+      alert(`Error creating task: , ${error}`);
     } finally {
       setFormVisibility(false);
       setFormData(defaultFormState);
@@ -56,14 +56,14 @@ function App() {
         `${API}/tasks/${id}`,
         formData
       );
-      console.log("editedTask: ", editedTask);
+
       setTasksList((prev) =>
         prev.map((item) =>
           item.id === parseInt(editedTask.id) ? editedTask : item
         )
       );
     } catch (error) {
-      console.log(`Error: ${error}`);
+      alert(`Error editing task: , ${error}`);
     } finally {
       setTaskId(null);
       setIsEditing(false);
@@ -72,16 +72,12 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    console.log("Tasks list updated: ", tasksList);
-  }, [tasksList]);
-
   const deleteTask = async (id: number) => {
     try {
       await axios.delete(`${API}/tasks/${id}`);
       setTasksList((prev) => prev.filter((task) => task.id !== id));
     } catch (error) {
-      console.log(`Error: ${error}`);
+      alert(`Error deleting task: , ${error}`);
     }
   };
 
@@ -93,13 +89,13 @@ function App() {
     "py-2 pl-3 mb-4 transition border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";
 
   return (
-    <section className="bg-[#141e2f] flex flex-col justify-center items-center text-[#e4edfc] mt-[10vh]">
+    <section className="flex flex-col justify-center items-center text-[#e4edfc] mt-[10vh]">
       {formVisiblility && (
         <form
           onSubmit={(e) => {
             isEditing ? editTask(taskId, e) : createTask(e);
           }}
-          className="absolute w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-stone-800 top-1/2 left-1/2 rounded-2xl "
+          className="absolute w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 rounded-2xl"
         >
           <div className="flex flex-col">
             <label className="mb-1" htmlFor="title">
@@ -218,6 +214,8 @@ function App() {
                   <td className="rounded-md">{task.due}</td>
                   <td>
                     <i
+                      role="button"
+                      tabIndex={0}
                       onClick={() => {
                         setFormData({
                           id: task.id,
@@ -233,8 +231,11 @@ function App() {
                       className="pr-5 fa-solid fa-pen"
                     ></i>
                     <i
+                      role="button"
+                      tabIndex={0}
                       onClick={() => {
-                        deleteTask(task.id);
+                        const userChoice = confirm("Delete Task?");
+                        if (userChoice) deleteTask(task.id);
                       }}
                       className="fa-solid fa-trash"
                     ></i>
