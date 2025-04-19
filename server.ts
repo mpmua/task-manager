@@ -1,6 +1,12 @@
+import {
+  fetchAllTasks,
+  createTask,
+  editTask,
+  deleteTask,
+} from "./controllers/taskController";
+
 const express = require("express");
 const app = express();
-const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
 
 app.use(express.json());
@@ -11,99 +17,7 @@ app.listen(PORT, () => {
   console.log(`Server is listening on http://localhost:${PORT}`);
 });
 
-const db = new sqlite3.Database("./tasks.db", (err) => {
-  if (err) {
-    console.error("DB Error: ", err.message);
-    process.exit(1);
-  }
-  console.log("Connected to sqlite database");
-});
-
-db.run(
-  `CREATE TABLE IF NOT EXISTS tasks_table (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  description TEXT,
-  status TEXT NOT NULL,
-  due TEXT NOT NULL
-  )`,
-  (err) => {
-    if (err) {
-      console.error("DB Error: ", err.message);
-      process.exit(1);
-    }
-    console.log("Created database succesfully");
-  }
-);
-
-app.get("/", (req, res) => {
-  db.all("SELECT * FROM tasks_table", (err, rows) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ error: `Error fetching data from DB: ${err.message}` });
-    }
-    res.status(200).json({ tasksList: rows });
-  });
-});
-
-app.post("/tasks", (req, res) => {
-  const { title, description, status, due } = req.body;
-
-  db.run(
-    "INSERT INTO tasks_table (title, description, status, due) VALUES (?, ?, ?, ?)",
-    [title, description, status, due],
-    function (err) {
-      if (err) {
-        return res.status(500).json({
-          error: `Error creating task: ${err.message}`,
-        });
-      }
-
-      res.status(201).json({
-        id: this.lastID,
-        title,
-        description,
-        status,
-        due,
-      });
-    }
-  );
-});
-
-app.patch("/tasks/:id", (req, res) => {
-  const { id } = req.params;
-  const { title, description, status, due } = req.body;
-  const sqlStmnt =
-    "UPDATE tasks_table SET title = ?, description = ?, status = ?, due = ? WHERE id = ?";
-  db.run(sqlStmnt, [title, description, status, due, id], function (err) {
-    if (err) {
-      return res
-        .status(500)
-        .json({ error: `Error editing task with id ${id}: ${err.message}` });
-    }
-
-    res.status(201).json({
-      id,
-      title,
-      description,
-      status,
-      due,
-    });
-  });
-});
-
-app.delete("/tasks/:id", (req, res) => {
-  const { id } = req.params;
-  db.run("DELETE FROM tasks_table WHERE id = ?", id, function (err) {
-    if (err) {
-      return res
-        .status(500)
-        .json({ error: `Error deleting task: ${err.message}` });
-    }
-    res.status(200).json({
-      success: true,
-      message: `Task with ID of ${id} deleted successfully`,
-    });
-  });
-});
+app.get("/", fetchAllTasks);
+app.post("/tasks", createTask);
+app.patch("/tasks/:id", editTask);
+app.delete("/tasks/:id", deleteTask);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Task } from "./utils/types";
+import { Task } from "../../shared/types";
 
 function App() {
   const [tasksList, setTasksList] = useState<Task[]>([]);
