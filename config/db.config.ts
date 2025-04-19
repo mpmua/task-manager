@@ -25,4 +25,4 @@ db.run(
   }
 );
 
-export { db };
+export default db;
