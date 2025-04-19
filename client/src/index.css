@@ -1,7 +1,7 @@
 @import "tailwindcss";
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 
 @layer base {
   *,
@@ -26,24 +26,9 @@
     font-family: "Roboto", sans-serif;
     font-weight: 400;
   }
-  /* html,
-  body,
-  #root {
-    height: 100%;
-  } */
+
   th,
   td {
     padding: 1rem 0 1rem 0;
   }
 }
-
-/* * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background-color: #8989a0;
-  max-width: 1200px;
-} */

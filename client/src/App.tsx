@@ -6,7 +6,7 @@ function App() {
   const [tasksList, setTasksList] = useState<Task[]>([]);
   const [formVisiblility, setFormVisibility] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [taskId, setTaskId] = useState<number | null>();
+  const [taskId, setTaskId] = useState<number | null>(null);
 
   const defaultFormState: Task = {
     id: 0,
@@ -48,7 +48,7 @@ function App() {
     }
   };
 
-  const editTask = async (id: number, e) => {
+  const editTask = async (id: number, e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -81,7 +81,11 @@ function App() {
     }
   };
 
-  const handleFormInputs = (e) => {
+  const handleFormInputs = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -93,9 +97,11 @@ function App() {
       {formVisiblility && (
         <form
           onSubmit={(e) => {
-            isEditing ? editTask(taskId, e) : createTask(e);
+            if (taskId !== null) {
+              isEditing ? editTask(taskId, e) : createTask(e);
+            }
           }}
-          className="absolute w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 rounded-2xl"
+          className="absolute text-[#3b3b3b] w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-[#cbcbcb] top-1/2 left-1/2 rounded-2xl"
         >
           <div className="flex flex-col">
             <label className="mb-1" htmlFor="title">
@@ -118,7 +124,7 @@ function App() {
             <input
               className={inputStyles}
               onChange={handleFormInputs}
-              value={formData.description}
+              value={formData.description ?? ""}
               type="text"
               placeholder="Description"
               name="description"
@@ -180,71 +186,76 @@ function App() {
         >
           Create Task
         </button>
-        <table className="mt-5 text-center">
-          <thead>
-            <tr className="text-sm">
-              <th className="w-1/6">TITLE</th>
-              <th className="w-2/6">DESCRIPTION</th>
-              <th className="w-1/6">STATUS</th>
-              <th className="w-1/6">DUE</th>
-              <th className="w-1/6"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasksList.map((task) => {
-              return (
-                <tr className="border-b border-stone-700" key={task.id}>
-                  <td className="">{task.title}</td>
-                  <td>{task.description}</td>
-                  <td>
-                    <div
-                      className={`w-2/3 p-2 mx-auto rounded-2xl ${
-                        task.status === "Complete"
-                          ? "bg-green-200 text-green-800"
-                          : task.status === "Not Started"
-                          ? "bg-yellow-200 text-yellow-800"
-                          : task.status === "In Progress"
-                          ? "bg-amber-200 text-amber-800"
-                          : "bg-transparent"
-                      }`}
-                    >
-                      {task.status}
-                    </div>
-                  </td>
-                  <td className="rounded-md">{task.due}</td>
-                  <td>
-                    <i
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        setFormData({
-                          id: task.id,
-                          title: task.title,
-                          description: task.description,
-                          status: task.status,
-                          due: task.due,
-                        });
-                        setFormVisibility(true);
-                        setIsEditing(true);
-                        setTaskId(task.id);
-                      }}
-                      className="pr-5 fa-solid fa-pen"
-                    ></i>
-                    <i
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        const userChoice = confirm("Delete Task?");
-                        if (userChoice) deleteTask(task.id);
-                      }}
-                      className="fa-solid fa-trash"
-                    ></i>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <section className="overflow-x-auto">
+          <table className="mt-5 text-center">
+            <thead>
+              <tr className="text-sm">
+                <th className="w-1/6">TITLE</th>
+                <th className="w-2/6">DESCRIPTION</th>
+                <th className="w-1/6">STATUS</th>
+                <th className="w-1/6">DUE</th>
+                <th className="w-1/6"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {tasksList.map((task) => {
+                return (
+                  <tr className="border-b border-stone-700" key={task.id}>
+                    <td className="">{task.title}</td>
+                    <td>{task.description}</td>
+                    <td>
+                      <p
+                        className={`p-1 rounded-md whitespace-nowrap ${
+                          task.status === "Complete"
+                            ? "bg-green-200 text-green-800"
+                            : task.status === "Not Started"
+                            ? "bg-yellow-200 text-yellow-800"
+                            : task.status === "In Progress"
+                            ? "bg-amber-200 text-amber-800"
+                            : "bg-transparent"
+                        }`}
+                      >
+                        {task.status}
+                      </p>
+                    </td>
+                    <td className="rounded-md">
+                      {new Date(task.due).toLocaleString()}
+                      {/* {task.due} */}
+                    </td>
+                    <td>
+                      <i
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          setFormData({
+                            id: task.id,
+                            title: task.title,
+                            description: task.description,
+                            status: task.status,
+                            due: task.due,
+                          });
+                          setFormVisibility(true);
+                          setIsEditing(true);
+                          setTaskId(task.id);
+                        }}
+                        className="pr-5 fa-solid fa-pen"
+                      ></i>
+                      <i
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          const userChoice = confirm("Delete Task?");
+                          if (userChoice) deleteTask(task.id);
+                        }}
+                        className="fa-solid fa-trash"
+                      ></i>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
       </section>
     </section>
   );
