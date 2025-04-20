@@ -1,34 +1,14 @@
 {
-  "name": "hmcts",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "hmcts-app",
+  "private": true,
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "ts-node-dev --respawn --transpile-only server.ts",
-    "client": "npm run dev --prefix client",
-    "build": "tsc",
-    "type-check": "tsc --noEmit",
-    "test": "jest"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "sqlite3": "^5.1.7",
-    "tailwindcss": "^4.1.4",
-    "ts-node-dev": "^2.0.0"
+    "dev": "concurrently \"npm start --prefix server\" \"npm start --prefix client\"",
+    "build": "npm run build --prefix client && npm run build --prefix server",
+    "typecheck": "concurrently \"tsc --noEmit --project client/tsconfig.json\" \"tsc --noEmit --project server/tsconfig.json\"",
+    "test": "concurrently \"npm test --prefix client\" \"npm test --prefix server\"",
+    "check-all": "npm run typecheck && npm run test"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^22.14.1",
-    "concurrently": "^9.1.2",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.9",
-    "ts-jest": "^29.3.2",
-    "typescript": "^5.8.3"
+    "concurrently": "^8.2.2"
   }
 }

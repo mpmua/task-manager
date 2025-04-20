@@ -1,7 +1,7 @@
 import * as sqlite3 from "sqlite3";
 import db from "../config/db.config";
 import { Request, Response } from "express";
-import { Task } from "../shared/types";
+import { Task } from "../../shared/types";
 
 export const fetchAllTasks = (req: Request, res: Response) => {
   db.all("SELECT * FROM tasks_table", (err: Error | null, rows: Task[]) => {

@@ -40,6 +40,7 @@ function App() {
     try {
       const res = await axios.post(`${API}/tasks`, formData);
       setTasksList((prev) => [...prev, res.data]);
+      console.log("res:", res);
     } catch (error) {
       alert(`Error creating task: , ${error}`);
     } finally {
@@ -47,6 +48,10 @@ function App() {
       setFormData(defaultFormState);
     }
   };
+
+  // useEffect(() => {
+  //   console.log(tasksList);
+  // }, [tasksList]);
 
   const editTask = async (id: number, e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
