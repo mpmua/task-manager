@@ -49,10 +49,6 @@ function App() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(tasksList);
-  // }, [tasksList]);
-
   const editTask = async (id: number, e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -115,12 +111,13 @@ function App() {
               <b>TITLE (Required)</b>
             </label>
             <input
+              id="title"
+              name="title"
               className={inputStyles}
               onChange={handleFormInputs}
               value={formData.title}
               type="text"
               placeholder="Title"
-              name="title"
               required
             />
           </div>
@@ -129,12 +126,13 @@ function App() {
               <b>Description (Optional)</b>
             </label>
             <textarea
+              id="description"
+              name="description"
               className={inputStyles}
               onChange={handleFormInputs}
               value={formData.description ?? ""}
               placeholder="Description"
               rows={4}
-              name="description"
             ></textarea>
           </div>
           <section className="flex flex-wrap justify-between gap-4">
@@ -143,6 +141,7 @@ function App() {
                 <b>Status (Required)</b>
               </label>
               <select
+                id="status"
                 name="status"
                 className={inputStyles}
                 value={formData.status}
@@ -162,12 +161,13 @@ function App() {
                 <b>Due Date/Time (Required)</b>
               </label>
               <input
+                id="due"
+                name="due"
                 type="datetime-local"
                 className={inputStyles}
                 onChange={handleFormInputs}
                 value={formData.due}
                 placeholder="Due Date/Time"
-                name="due"
                 required
               />
             </div>

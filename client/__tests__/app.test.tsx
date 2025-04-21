@@ -1,13 +1,96 @@
 import App from "../src/App";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import axios from "axios";
 import { Task } from "../../shared/types";
 
 jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-describe("App", () => {
-  test("renders without crashing", () => {
+const mockGetTasks = jest.fn();
+const mockCreateTask = jest.fn();
+const mockEditTask = jest.fn();
+const mockDeleteTask = jest.fn();
+
+describe("App Component", () => {
+  beforeEach(() => {
+    mockedAxios.get.mockClear();
+    mockedAxios.post.mockClear();
+    mockedAxios.patch.mockClear();
+    mockedAxios.delete.mockClear();
+    window.alert = jest.fn();
+  });
+
+  it("renders the task list", async () => {
+    mockedAxios.get.mockResolvedValueOnce({
+      data: {
+        tasksList: [
+          {
+            id: 1,
+            title: "Test Task 1",
+            description: "Description 1",
+            status: "Not Started",
+            due: "2025-04-21T10:00",
+          },
+          {
+            id: 2,
+            title: "Test Task 2",
+            description: "Description 2",
+            status: "In Progress",
+            due: "2025-04-22T10:00",
+          },
+        ],
+      },
+    });
+
     render(<App />);
-    expect(screen.getByText("Welcome")).toBeInTheDocument(); // Update the text based on what you expect in App.js
+    await waitFor(() => screen.getByText("Test Task 1"));
+    await waitFor(() => screen.getByText("Test Task 2"));
+
+    expect(screen.getByText("Test Task 1")).toBeInTheDocument();
+    expect(screen.getByText("Test Task 2")).toBeInTheDocument();
+  });
+
+  it("handles task creation", async () => {
+    const dummyTask: Task = {
+      id: 3,
+      title: "Test Task 3",
+      description: "Dummy Task Description",
+      status: "Not Started",
+      due: "2025-04-23T10:00",
+    };
+
+    mockedAxios.post.mockResolvedValueOnce({ data: dummyTask });
+
+    render(<App />);
+
+    fireEvent.click(screen.getByText(/Create Task/i));
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "TITLE (Required)" }),
+      {
+        target: { value: "Test Task 3" },
+      }
+    );
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "Description (Optional)" }),
+      {
+        target: { value: "Test Task 3 Description" },
+      }
+    );
+    fireEvent.change(
+      screen.getByRole("combobox", { name: "Status (Required)" }),
+      {
+        target: { value: "In Progress" },
+      }
+    );
+
+    fireEvent.change(screen.getByLabelText(/due/i), {
+      target: { value: "2025-04-25T10:00" },
+    });
+
+    fireEvent.click(screen.getByText(/Submit/i));
+
+    await waitFor(() => screen.getByText("Test Task 3"));
+
+    expect(screen.getByText("Test Task 3")).toBeInTheDocument();
   });
 });
