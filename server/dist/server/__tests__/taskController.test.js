@@ -5,22 +5,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_config_1 = __importDefault(require("../config/db.config"));
 const taskController_1 = require("../controllers/taskController");
-// jest.mock("../config/db.config", () => ({
-//   __esModule: true,
-//   default: {
-//     all: jest.fn(),
-//     run: jest.fn(),
-//   },
-// }))
-jest.mock("sqlite3", () => {
-    return {
-        verbose: jest.fn().mockReturnThis(),
-        Database: jest.fn().mockImplementation(() => ({
-            all: jest.fn(),
-            run: jest.fn(),
-        })),
-    };
-});
+jest.mock("../config/db.config", () => ({
+    __esModule: true,
+    default: {
+        all: jest.fn(),
+        run: jest.fn(),
+    },
+}));
+// jest.mock("sqlite3", () => {
+//   return {
+//     verbose: jest.fn().mockReturnThis(),
+//     Database: jest.fn().mockImplementation(() => ({
+//       all: jest.fn(),
+//       run: jest.fn(),
+//     })),
+//   };
+// });
 const mockTasks = [
     {
         id: 1,
@@ -84,12 +84,13 @@ describe("createTask", () => {
         };
         res = {
             status: jest.fn().mockReturnThis(),
-            json: jest.fn().mockImplementation((body) => body),
+            json: jest.fn(),
         };
     });
     it("should create a task", () => {
+        const mockRunResult = { lastID: 1 };
         db_config_1.default.run.mockImplementation((query, params, callbackFn) => {
-            callbackFn(null);
+            callbackFn(mockRunResult, null);
         });
         (0, taskController_1.createTask)(req, res);
         expect(res.status).toHaveBeenCalledWith(201);

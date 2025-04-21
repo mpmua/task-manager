@@ -8,22 +8,22 @@ import {
 } from "../controllers/taskController";
 import { Task } from "../../shared/types";
 
-// jest.mock("../config/db.config", () => ({
-//   __esModule: true,
-//   default: {
-//     all: jest.fn(),
-//     run: jest.fn(),
-//   },
-// }))
-jest.mock("sqlite3", () => {
-  return {
-    verbose: jest.fn().mockReturnThis(),
-    Database: jest.fn().mockImplementation(() => ({
-      all: jest.fn(),
-      run: jest.fn(),
-    })),
-  };
-});
+jest.mock("../config/db.config", () => ({
+  __esModule: true,
+  default: {
+    all: jest.fn(),
+    run: jest.fn(),
+  },
+}));
+// jest.mock("sqlite3", () => {
+//   return {
+//     verbose: jest.fn().mockReturnThis(),
+//     Database: jest.fn().mockImplementation(() => ({
+//       all: jest.fn(),
+//       run: jest.fn(),
+//     })),
+//   };
+// });
 
 const mockTasks: Task[] = [
   {
@@ -95,14 +95,15 @@ describe("createTask", () => {
     };
     res = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockImplementation((body) => body),
+      json: jest.fn(),
     };
   });
 
   it("should create a task", () => {
+    const mockRunResult = { lastID: 1 };
     (db.run as jest.Mock).mockImplementation(
       (query: string, params: any[], callbackFn: Function) => {
-        callbackFn(null);
+        callbackFn(mockRunResult, null);
       }
     );
 

@@ -5,7 +5,7 @@ const db = new sqlite3.Database("./tasks.db", (err: Error | null) => {
     console.error("DB Error: ", err.message);
     process.exit(1);
   }
-  console.log("Connected to sqlite database");
+  // console.log("Connected to sqlite database");
 });
 
 db.run(
@@ -21,7 +21,7 @@ db.run(
       console.error("DB Error: ", err.message);
       process.exit(1);
     }
-    console.log("Created database succesfully");
+    // console.log("Created database succesfully");
   }
 );
 

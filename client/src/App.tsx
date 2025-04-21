@@ -103,9 +103,10 @@ function App() {
       {formVisiblility && (
         <form
           onSubmit={(e) => {
-            if (taskId !== null) {
-              isEditing ? editTask(taskId, e) : createTask(e);
-            }
+            // if (taskId !== null) {
+            //@ts-ignore
+            isEditing ? editTask(taskId, e) : createTask(e);
+            // }
           }}
           className="absolute text-[#3b3b3b] w-1/2 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-[#cbcbcb] top-1/2 left-1/2 rounded-2xl"
         >
