@@ -23,6 +23,7 @@ function App() {
     try {
       const response = await axios.get(`${API}/`);
       setTasksList(response.data.tasksList);
+      console.log("Tasks fetched, response is: ", response);
     } catch (error) {
       alert(`Error fetching tasks: ${error}`);
     }
@@ -51,12 +52,14 @@ function App() {
 
   const editTask = async (id: number, e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("SENDING THIS FORM DATA (EDITTASK): ", formData);
 
     try {
       const { data: editedTask } = await axios.patch(
         `${API}/tasks/${id}`,
         formData
       );
+      console.log("EDITED TASK DATA: ", editedTask);
 
       setTasksList((prev) =>
         prev.map((item) =>
@@ -233,6 +236,7 @@ function App() {
                     <td>
                       <i
                         role="button"
+                        aria-label="Edit Task"
                         tabIndex={0}
                         onClick={() => {
                           setFormData({
@@ -250,6 +254,7 @@ function App() {
                       ></i>
                       <i
                         role="button"
+                        aria-label="Delete Task"
                         tabIndex={0}
                         onClick={() => {
                           const userChoice = confirm("Delete Task?");
