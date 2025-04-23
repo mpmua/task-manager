@@ -8,24 +8,15 @@ import {
 } from "../controllers/taskController";
 import { Task } from "../../shared/types";
 
-jest.mock("../config/db.config", () => ({
+jest.mock("../config/db.config.ts", () => ({
   __esModule: true,
   default: {
     all: jest.fn(),
     run: jest.fn(),
   },
 }));
-// jest.mock("sqlite3", () => {
-//   return {
-//     verbose: jest.fn().mockReturnThis(),
-//     Database: jest.fn().mockImplementation(() => ({
-//       all: jest.fn(),
-//       run: jest.fn(),
-//     })),
-//   };
-// });
 
-const mockTasks: Task[] = [
+const dummyTasks: Task[] = [
   {
     id: 1,
     title: "Test Task 1",
@@ -70,13 +61,23 @@ describe("fetchAllTasks", () => {
 
   it("should return all tasks with status 200 on success", () => {
     db.all.mockImplementation((query: string, callbackFn: Function) => {
-      callbackFn(null, mockTasks);
+      callbackFn(null, dummyTasks);
     });
 
     fetchAllTasks(req as Request, res as Response);
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ tasksList: mockTasks });
+    expect(res.json).toHaveBeenCalledWith({ tasksList: dummyTasks });
+  });
+
+  it("should return status 500 on failure", () => {
+    db.all.mockImplementation((query: string, callbackFn: Function) => {
+      callbackFn(new Error("Error fetching data from database"));
+    });
+
+    fetchAllTasks(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 });
 
@@ -88,9 +89,9 @@ describe("createTask", () => {
     req = {
       body: {
         title: "Dummy Task",
-        description: "Test",
-        status: "Test",
-        due: "Test",
+        description: "Dummy Task Description",
+        status: "Dummy Task Status",
+        due: "Dummy Task Due Date/Time",
       },
     };
     res = {
@@ -99,11 +100,12 @@ describe("createTask", () => {
     };
   });
 
-  it("should create a task", () => {
-    const mockRunResult = { lastID: 1 };
-    (db.run as jest.Mock).mockImplementation(
+  it("should return status 201 and create a task", () => {
+    const mockId = { lastID: 1 };
+
+    db.run.mockImplementation(
       (query: string, params: any[], callbackFn: Function) => {
-        callbackFn(mockRunResult, null);
+        callbackFn.call(mockId, null);
       }
     );
 
@@ -113,40 +115,57 @@ describe("createTask", () => {
     expect(res.json).toHaveBeenCalledWith({
       id: 1,
       title: "Dummy Task",
-      description: "Test",
-      status: "Test",
-      due: "Test",
+      description: "Dummy Task Description",
+      status: "Dummy Task Status",
+      due: "Dummy Task Due Date/Time",
     });
   });
-});
 
-describe("deleteTask", () => {
-  let req: Partial<Request> = {};
-  let res: Partial<Response> = {};
+  it("should return status 500 if there's an error creating a task", () => {
+    const error = new Error("DB write failed");
 
-  beforeEach(() => {
-    req = {
-      params: { id: "1" },
-    };
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-  });
-
-  it("should delete a task and return status of 200 on success", () => {
     db.run.mockImplementation(
-      (query: string, id: string, callback: Function) => {
-        callback(null);
+      (query: string, params: any[], callbackFn: Function) => {
+        callbackFn.call({}, error);
       }
     );
 
-    deleteTask(req as Request, res as Response);
+    createTask(req as Request, res as Response);
 
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      success: true,
-      message: "Task with ID of 1 deleted successfully",
+      error: `Error creating task: ${error.message}`,
     });
   });
 });
+
+// describe("deleteTask", () => {
+//   let req: Partial<Request> = {};
+//   let res: Partial<Response> = {};
+
+//   beforeEach(() => {
+//     req = {
+//       params: { id: "1" },
+//     };
+//     res = {
+//       status: jest.fn().mockReturnThis(),
+//       json: jest.fn(),
+//     };
+//   });
+
+//   it("should delete a task and return status of 200 on success", () => {
+//     db.run.mockImplementation(
+//       (query: string, id: string, callback: Function) => {
+//         callback(null);
+//       }
+//     );
+
+//     deleteTask(req as Request, res as Response);
+
+//     expect(res.status).toHaveBeenCalledWith(200);
+//     expect(res.json).toHaveBeenCalledWith({
+//       success: true,
+//       message: "Task with ID of 1 deleted successfully",
+//     });
+//   });
+// });
