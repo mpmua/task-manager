@@ -125,7 +125,6 @@ describe("App Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
     await waitFor(() => expect(mockedAxios.patch).toHaveBeenCalledTimes(1));
-
     expect(await screen.findByText(editedTask.title)).toBeInTheDocument();
   });
 
@@ -136,7 +135,7 @@ describe("App Component", () => {
 
     render(<App />);
 
-    await waitFor(() => screen.getByText("Test Task 1"));
+    expect(await screen.findByText("Test Task 1")).toBeInTheDocument();
 
     const deleteBtns = screen.getAllByRole("button", { name: /Delete Task/i });
 
@@ -149,7 +148,7 @@ describe("App Component", () => {
     });
 
     fireEvent.click(deleteBtns[1]);
-    await waitFor(() => screen.getByText("Test Task 1"));
+    expect(await screen.findByText("Test Task 1"));
     await waitFor(() =>
       expect(screen.queryByText("Test Task 2")).not.toBeInTheDocument()
     );

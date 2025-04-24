@@ -23,7 +23,6 @@ function App() {
     try {
       const response = await axios.get(`${API}/`);
       setTasksList(response.data.tasksList);
-      // console.log("Tasks fetched, response is: ", response);
     } catch (error) {
       alert(`Error fetching tasks: ${error}`);
     }
@@ -37,13 +36,10 @@ function App() {
   }, []);
 
   const createTask = async (e: React.FormEvent) => {
-    console.log("CREATE TASK HAS RUN");
-
     e.preventDefault();
     try {
       const res = await axios.post(`${API}/tasks`, formData);
       setTasksList((prev) => [...prev, res.data]);
-      // console.log("res:", res);
     } catch (error) {
       alert(`Error creating task: , ${error}`);
     } finally {
@@ -59,10 +55,6 @@ function App() {
       const { data: editedTask } = await axios.patch(
         `${API}/tasks/${id}`,
         formData
-      );
-      console.log(
-        "EDITED TASK DATA: ",
-        await axios.patch(`${API}/tasks/${id}`, formData)
       );
 
       setTasksList((prev) =>
@@ -104,13 +96,9 @@ function App() {
       {formVisiblility && (
         <form
           onSubmit={(e) => {
-            console.log("ONSUBMIT CLICKED, TASKID IS: ", taskId);
-
             if (!isEditing) {
-              console.log("CREATING TASK");
               createTask(e);
             } else if (isEditing && taskId) {
-              console.log("EDITING TASK");
               editTask(taskId, e);
             }
           }}
