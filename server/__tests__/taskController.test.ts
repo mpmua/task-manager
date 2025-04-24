@@ -139,6 +139,59 @@ describe("Create Task", () => {
   });
 });
 
+describe("Edit Task", () => {
+  let req: Partial<Request> = {};
+  let res: Partial<Response> = {};
+
+  const editedDummyTask = {
+    id: 1,
+    title: "EDITED DUMMY TASK",
+    description: "EDITED DUMMY TASK",
+    status: "Complete",
+    due: "0111-01-01T11:11",
+  };
+
+  beforeEach(() => {
+    req = {
+      body: editedDummyTask,
+      params: { id: "1" },
+    };
+  });
+
+  res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+
+  it("should edit a task and return a 201 response", () => {
+    db.run.mockImplementation(
+      (query: string, params: any[], callbackFn: Function) => {
+        callbackFn(null);
+      }
+    );
+    editTask(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith(editedDummyTask);
+  });
+
+  it("should return a status of 500 upon failure to edit a task", () => {
+    const error = new Error("Error editing task");
+    db.run.mockImplementation(
+      (query: string, params: any[], callbackFn: Function) => {
+        callbackFn(error);
+      }
+    );
+
+    editTask(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: `Error editing task with id of 1: ${error.message}`,
+    });
+  });
+});
+
 describe("Delete Task", () => {
   let req: Partial<Request> = {};
   let res: Partial<Response> = {};
@@ -169,7 +222,7 @@ describe("Delete Task", () => {
     });
   });
 
-  it("should return status of 200 when deleting a task fails", () => {
+  it("should return status of 500 when deleting a task fails", () => {
     const error = new Error("Error deleting task");
     db.run.mockImplementation(
       (query: string, id: string, callbackFn: Function) => {

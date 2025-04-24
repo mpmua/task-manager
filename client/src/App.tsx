@@ -59,12 +59,13 @@ function App() {
         `${API}/tasks/${id}`,
         formData
       );
-      console.log("EDITED TASK DATA: ", editedTask);
+      console.log(
+        "EDITED TASK DATA: ",
+        await axios.patch(`${API}/tasks/${id}`, formData)
+      );
 
       setTasksList((prev) =>
-        prev.map((item) =>
-          item.id === parseInt(editedTask.id) ? editedTask : item
-        )
+        prev.map((item) => (item.id === editedTask.id ? editedTask : item))
       );
     } catch (error) {
       alert(`Error editing task: , ${error}`);
