@@ -6,17 +6,29 @@ import { Task } from "../../shared/types";
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const mockGetTasks = jest.fn();
-const mockCreateTask = jest.fn();
-const mockEditTask = jest.fn();
-const mockDeleteTask = jest.fn();
+const dummyTasks: Task[] = [
+  {
+    id: 1,
+    title: "Test Task 1",
+    description: "Description 1",
+    status: "Not Started",
+    due: "2025-04-21T10:00",
+  },
+  {
+    id: 2,
+    title: "Test Task 2",
+    description: "Description 2",
+    status: "In Progress",
+    due: "2025-04-22T10:00",
+  },
+];
 
-const dummyTask: Task = {
-  id: 3,
-  title: "Test Task 3",
-  description: "Dummy Task Description",
-  status: "Not Started",
-  due: "2025-04-23T10:00",
+const getDummyTasks = () => {
+  mockedAxios.get.mockResolvedValueOnce({
+    data: {
+      tasksList: dummyTasks,
+    },
+  });
 };
 
 describe("App Component", () => {
@@ -29,37 +41,16 @@ describe("App Component", () => {
   });
 
   it("renders the task list", async () => {
-    mockedAxios.get.mockResolvedValueOnce({
-      data: {
-        tasksList: [
-          {
-            id: 1,
-            title: "Test Task 1",
-            description: "Description 1",
-            status: "Not Started",
-            due: "2025-04-21T10:00",
-          },
-          {
-            id: 2,
-            title: "Test Task 2",
-            description: "Description 2",
-            status: "In Progress",
-            due: "2025-04-22T10:00",
-          },
-        ],
-      },
-    });
+    getDummyTasks();
 
     render(<App />);
-    await waitFor(() => screen.getByText("Test Task 1"));
-    await waitFor(() => screen.getByText("Test Task 2"));
 
-    expect(screen.getByText("Test Task 1")).toBeInTheDocument();
-    expect(screen.getByText("Test Task 2")).toBeInTheDocument();
+    expect(await screen.findByText("Test Task 1")).toBeInTheDocument();
+    expect(await screen.findByText("Test Task 2")).toBeInTheDocument();
   });
 
   it("handles task creation", async () => {
-    mockedAxios.post.mockResolvedValueOnce({ data: dummyTask });
+    mockedAxios.post.mockResolvedValueOnce({ data: dummyTasks[0] });
 
     render(<App />);
 
@@ -67,138 +58,81 @@ describe("App Component", () => {
     fireEvent.change(
       screen.getByRole("textbox", { name: "TITLE (Required)" }),
       {
-        target: { value: "Test Task 3" },
+        target: { value: dummyTasks[0].title },
       }
     );
     fireEvent.change(
       screen.getByRole("textbox", { name: "Description (Optional)" }),
       {
-        target: { value: "Test Task 3 Description" },
+        target: { value: dummyTasks[0].description },
       }
     );
     fireEvent.change(
       screen.getByRole("combobox", { name: "Status (Required)" }),
       {
-        target: { value: "In Progress" },
+        target: { value: dummyTasks[0].status },
       }
     );
 
     fireEvent.change(screen.getByLabelText(/due/i), {
-      target: { value: "2025-04-25T10:00" },
+      target: { value: dummyTasks[0].due },
     });
 
     fireEvent.click(screen.getByText(/Submit/i));
 
-    await waitFor(() => screen.getByText("Test Task 3"));
-
-    expect(screen.getByText("Test Task 3")).toBeInTheDocument();
+    expect(await screen.findByText(dummyTasks[0].title)).toBeInTheDocument();
   });
 
-  it("handles editing a task", async () => {
-    mockedAxios.get.mockResolvedValueOnce({
-      data: {
-        tasksList: [
-          {
-            id: 1,
-            title: "Test Task 1",
-            description: "Description 1",
-            status: "Not Started",
-            due: "2025-04-21T10:00",
-          },
-          {
-            id: 2,
-            title: "Test Task 2",
-            description: "Description 2",
-            status: "In Progress",
-            due: "2025-04-22T10:00",
-          },
-        ],
-      },
-    });
+  it("handles editing a task and returns", async () => {
+    getDummyTasks();
+
+    const dummyTask = dummyTasks[0];
+
+    const editedTask: Task = {
+      id: 1,
+      title: "Test Task 1 - Edited",
+      description: "Edited Description",
+      status: "Complete",
+      due: "2024-01-25T09:00",
+    };
+
+    mockedAxios.patch.mockResolvedValueOnce({ data: editedTask });
 
     render(<App />);
 
-    await waitFor(() => screen.getByText("Test Task 1"));
-    const editButtons = screen.getAllByRole("button", { name: /Edit Task/i });
-    fireEvent.click(editButtons[0]);
+    await screen.findByText(dummyTask.title);
 
-    fireEvent.change(
-      screen.getByRole("textbox", { name: "TITLE (Required)" }),
-      {
-        target: { value: "Test Task 1 - Edited" },
-      }
-    );
-    fireEvent.change(
-      screen.getByRole("textbox", { name: "Description (Optional)" }),
-      {
-        target: { value: "Test Task 1 Description - Edited" },
-      }
-    );
-    fireEvent.change(
-      screen.getByRole("combobox", { name: "Status (Required)" }),
-      {
-        target: { value: "Completed" },
-      }
-    );
+    fireEvent.click(screen.getAllByRole("button", { name: /Edit Task/i })[0]);
+
+    await screen.findByDisplayValue(dummyTask.title);
+
+    fireEvent.change(screen.getByLabelText(/title/i), {
+      target: { value: editedTask.title },
+    });
+
+    fireEvent.change(screen.getByLabelText(/description/i), {
+      target: { value: editedTask.description },
+    });
+
+    fireEvent.change(screen.getByLabelText(/status/i), {
+      target: { value: editedTask.status },
+    });
 
     fireEvent.change(screen.getByLabelText(/due/i), {
-      target: { value: "2025-04-24T10:00" },
+      target: { value: editedTask.due },
     });
 
-    // mockedAxios.patch.mockResolvedValueOnce({
-    //   id: 1,
-    //   title: "Test Task 1 - Edited",
-    //   description: "Test Task 1 Description - Edited",
-    //   status: "Complete",
-    //   due: "2025-04-24T10:00",
-    // });
+    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
-    mockedAxios.patch.mockResolvedValueOnce({
-      data: {
-        id: 1,
-        title: "Test Task 1 - Edited",
-        description: "Test Task 1 Description - Edited",
-        status: "Complete",
-        due: "2025-04-24T10:00",
-      },
-    });
+    await waitFor(() => expect(mockedAxios.patch).toHaveBeenCalledTimes(1));
 
-    fireEvent.click(screen.getByText(/Submit/i));
-    // await waitFor(() => {
-    //   expect(screen.queryByLabelText(/TITLE/i)).not.toBeInTheDocument();
-    // });
-
-    await waitFor(() => {
-      screen.debug();
-    });
-
-    await waitFor(() => screen.getByText("Test Task 1 - Edited"));
-    expect(screen.getByText("Test Task 1 - Edited")).toBeInTheDocument();
+    expect(await screen.findByText(editedTask.title)).toBeInTheDocument();
   });
 
   it("handles a task being deleted", async () => {
     window.confirm = jest.fn().mockReturnValue(true);
 
-    mockedAxios.get.mockResolvedValueOnce({
-      data: {
-        tasksList: [
-          {
-            id: 1,
-            title: "Test Task 1",
-            description: "Description 1",
-            status: "Not Started",
-            due: "2025-04-21T10:00",
-          },
-          {
-            id: 2,
-            title: "Test Task 2",
-            description: "Description 2",
-            status: "In Progress",
-            due: "2025-04-22T10:00",
-          },
-        ],
-      },
-    });
+    getDummyTasks();
 
     render(<App />);
 
