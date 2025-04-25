@@ -31,29 +31,41 @@ const getDummyTasks = () => {
   });
 };
 
-describe("App Component", () => {
+describe("Render Tasks List", () => {
   beforeEach(() => {
     mockedAxios.get.mockClear();
-    mockedAxios.post.mockClear();
-    mockedAxios.patch.mockClear();
-    mockedAxios.delete.mockClear();
     window.alert = jest.fn();
   });
 
-  it("renders the task list", async () => {
+  it("renders the task list sucessfully", async () => {
     getDummyTasks();
 
     render(<App />);
 
-    expect(await screen.findByText("Test Task 1")).toBeInTheDocument();
-    expect(await screen.findByText("Test Task 2")).toBeInTheDocument();
+    expect(await screen.findByText(dummyTasks[0].title)).toBeInTheDocument();
+    expect(await screen.findByText(dummyTasks[1].title)).toBeInTheDocument();
   });
 
-  it("handles task creation", async () => {
-    mockedAxios.post.mockResolvedValueOnce({ data: dummyTasks[0] });
+  it("gives an alert error when task list fails to render", async () => {
+    mockedAxios.get.mockRejectedValueOnce(new Error("Error fetching tasks"));
 
     render(<App />);
 
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith(
+        expect.stringMatching(/Error fetching tasks/i)
+      );
+    });
+  });
+});
+
+describe("Create Tasks", () => {
+  beforeEach(() => {
+    mockedAxios.post.mockClear();
+    window.alert = jest.fn();
+  });
+
+  const submitNewTask = () => {
     fireEvent.click(screen.getByText(/Create Task/i));
     fireEvent.change(
       screen.getByRole("textbox", { name: "TITLE (Required)" }),
@@ -79,32 +91,49 @@ describe("App Component", () => {
     });
 
     fireEvent.click(screen.getByText(/Submit/i));
+  };
+
+  it("handles task creation sucessfully", async () => {
+    mockedAxios.post.mockResolvedValueOnce({ data: dummyTasks[0] });
+
+    render(<App />);
+
+    submitNewTask();
 
     expect(await screen.findByText(dummyTasks[0].title)).toBeInTheDocument();
   });
 
-  it("handles editing a task and returns", async () => {
-    getDummyTasks();
-
-    const dummyTask = dummyTasks[0];
-
-    const editedTask: Task = {
-      id: 1,
-      title: "Test Task 1 - Edited",
-      description: "Edited Description",
-      status: "Complete",
-      due: "2024-01-25T09:00",
-    };
-
-    mockedAxios.patch.mockResolvedValueOnce({ data: editedTask });
+  it("gives an alert error upon failure to create a task", async () => {
+    mockedAxios.post.mockRejectedValueOnce(new Error("Error creating task"));
 
     render(<App />);
 
-    await screen.findByText(dummyTask.title);
+    submitNewTask();
 
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith(
+        expect.stringMatching(/Error fetching tasks/i)
+      );
+    });
+  });
+});
+
+describe("Edit Tasks", () => {
+  beforeEach(() => {
+    mockedAxios.patch.mockClear();
+    window.alert = jest.fn();
+  });
+
+  const editedTask: Task = {
+    id: 1,
+    title: "Test Task 1 - Edited",
+    description: "Edited Description",
+    status: "Complete",
+    due: "2024-01-25T09:00",
+  };
+
+  const submitEditedTask = () => {
     fireEvent.click(screen.getAllByRole("button", { name: /Edit Task/i })[0]);
-
-    await screen.findByDisplayValue(dummyTask.title);
 
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: editedTask.title },
@@ -123,9 +152,44 @@ describe("App Component", () => {
     });
 
     fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+  };
+
+  it("handles editing a task sucessfully", async () => {
+    getDummyTasks();
+
+    mockedAxios.patch.mockResolvedValueOnce({ data: editedTask });
+
+    render(<App />);
+
+    await screen.findByText(dummyTasks[0].title);
+    submitEditedTask();
 
     await waitFor(() => expect(mockedAxios.patch).toHaveBeenCalledTimes(1));
     expect(await screen.findByText(editedTask.title)).toBeInTheDocument();
+  });
+
+  it("gives an alert error upon failure to edit a task", async () => {
+    getDummyTasks();
+    mockedAxios.patch.mockRejectedValueOnce(new Error("Error editing task:"));
+
+    render(<App />);
+
+    await screen.findByText(dummyTasks[0].title);
+
+    submitEditedTask();
+
+    await waitFor(() =>
+      expect(window.alert).toHaveBeenCalledWith(
+        expect.stringMatching(/Error Editing Task/i)
+      )
+    );
+  });
+});
+
+describe("Deletes a task", () => {
+  beforeEach(() => {
+    mockedAxios.delete.mockClear();
+    window.alert = jest.fn();
   });
 
   it("handles a task being deleted", async () => {
@@ -135,22 +199,31 @@ describe("App Component", () => {
 
     render(<App />);
 
-    expect(await screen.findByText("Test Task 1")).toBeInTheDocument();
+    expect(await screen.findByText(dummyTasks[0].title)).toBeInTheDocument();
 
-    const deleteBtns = screen.getAllByRole("button", { name: /Delete Task/i });
+    mockedAxios.delete.mockResolvedValueOnce(dummyTasks[1]);
 
-    mockedAxios.delete.mockResolvedValueOnce({
-      id: 2,
-      title: "Test Task 2",
-      description: "Description 2",
-      status: "In Progress",
-      due: "2025-04-22T10:00",
-    });
-
-    fireEvent.click(deleteBtns[1]);
-    expect(await screen.findByText("Test Task 1"));
+    fireEvent.click(screen.getAllByRole("button", { name: /Delete Task/i })[1]);
+    expect(await screen.findByText(dummyTasks[0].title));
     await waitFor(() =>
       expect(screen.queryByText("Test Task 2")).not.toBeInTheDocument()
+    );
+  });
+
+  it("gives an alert error upon failure to delete a task", async () => {
+    getDummyTasks();
+
+    mockedAxios.delete.mockRejectedValueOnce(new Error("Error deleting task"));
+
+    render(<App />);
+
+    expect(await screen.findByText(dummyTasks[0].title)).toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button", { name: /Delete Task/i })[1]);
+
+    await waitFor(() =>
+      expect(window.alert).toHaveBeenCalledWith(
+        expect.stringMatching(/Error deleting task/i)
+      )
     );
   });
 });
