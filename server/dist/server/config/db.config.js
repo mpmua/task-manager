@@ -6,7 +6,6 @@ const db = new sqlite3.Database("./tasks.db", (err) => {
         console.error("DB Error: ", err.message);
         process.exit(1);
     }
-    // console.log("Connected to sqlite database");
 });
 db.run(`CREATE TABLE IF NOT EXISTS tasks_table (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,6 +18,5 @@ db.run(`CREATE TABLE IF NOT EXISTS tasks_table (
         console.error("DB Error: ", err.message);
         process.exit(1);
     }
-    // console.log("Created database succesfully");
 });
 exports.default = db;

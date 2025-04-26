@@ -6,7 +6,7 @@
     "start": "ts-node-dev --respawn --transpile-only server.ts",
     "server": "ts-node-dev --respawn --transpile-only server.ts",
     "client": "npm run dev --prefix client",
-    "build": "tsc",
+    "build": "tsc && npm run test && echo 'Server build finished'",
     "type-check": "tsc --noEmit",
     "test": "jest"
   },

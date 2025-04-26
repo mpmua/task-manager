@@ -1,15 +1,14 @@
 {
-    "extends": "./client/tsconfig.app.json",
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": {
-        "@client/*": ["client/*"],
-        "@server/*": ["server/*"]
-      }
-    },
-    "include": [
-      "client/**/*",
-      "server/**/*"
-    ]
-  }
-  
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@client/*": ["client/*"],
+      "@server/*": ["server/*"]
+    }
+  },
+  "include": [
+    "client/**/*",
+    "server/**/*"
+  ]
+}
+

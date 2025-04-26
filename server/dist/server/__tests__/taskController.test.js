@@ -18,28 +18,28 @@ const dummyTasks = [
         title: "Test Task 1",
         description: "Testing",
         status: "In Progress",
-        due: "2025-06-22",
+        due: "2024-01-25T09:00",
     },
     {
         id: 2,
         title: "Test Task 2",
         description: "Testing",
         status: "Complete",
-        due: "2025-10-11",
+        due: "2024-01-25T04:00",
     },
     {
         id: 3,
         title: "Test Task 3",
         description: "Testing",
         status: "Not Started",
-        due: "2025-12-23",
+        due: "2024-01-25T20:00",
     },
     {
         id: 4,
         title: "Test Task 4",
         description: "Testing",
         status: "In Progress",
-        due: "2025-08-01",
+        due: "2024-01-25T15:00",
     },
 ];
 describe("Fetch All Tasks", () => {

@@ -35,8 +35,6 @@ const createTask = (req, res) => {
 };
 exports.createTask = createTask;
 const editTask = (req, res) => {
-    // console.log("REQUEST ON SERVER: ", req.body);
-    // console.log("PARAMS ON SERVER: ", req.params);
     const { id } = req.params;
     const { title, description, status, due } = req.body;
     const sqlStmnt = "UPDATE tasks_table SET title = ?, description = ?, status = ?, due = ? WHERE id = ?";

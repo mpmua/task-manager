@@ -61,7 +61,6 @@ function App() {
         prev.map((item) => (item.id === editedTask.id ? editedTask : item))
       );
     } catch (error) {
-      console.log("TRIGGERING ALERT");
       alert(`Error editing task: , ${error}`);
     } finally {
       setTaskId(null);
