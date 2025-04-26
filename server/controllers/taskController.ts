@@ -39,9 +39,6 @@ export const createTask = (req: Request, res: Response) => {
 };
 
 export const editTask = (req: Request, res: Response) => {
-  // console.log("REQUEST ON SERVER: ", req.body);
-  // console.log("PARAMS ON SERVER: ", req.params);
-
   const { id } = req.params;
   const { title, description, status, due } = req.body;
   const sqlStmnt =

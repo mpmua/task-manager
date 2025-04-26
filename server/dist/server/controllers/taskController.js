@@ -25,7 +25,7 @@ const createTask = (req, res) => {
             });
         }
         res.status(201).json({
-            id: this.lastID,
+            id: Number(this.lastID),
             title,
             description,
             status,
@@ -35,17 +35,19 @@ const createTask = (req, res) => {
 };
 exports.createTask = createTask;
 const editTask = (req, res) => {
+    // console.log("REQUEST ON SERVER: ", req.body);
+    // console.log("PARAMS ON SERVER: ", req.params);
     const { id } = req.params;
     const { title, description, status, due } = req.body;
     const sqlStmnt = "UPDATE tasks_table SET title = ?, description = ?, status = ?, due = ? WHERE id = ?";
     db_config_1.default.run(sqlStmnt, [title, description, status, due, id], function (err) {
         if (err) {
-            return res
-                .status(500)
-                .json({ error: `Error editing task with id ${id}: ${err.message}` });
+            return res.status(500).json({
+                error: `Error editing task with id of ${id}: ${err.message}`,
+            });
         }
         res.status(201).json({
-            id,
+            id: Number(id),
             title,
             description,
             status,

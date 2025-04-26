@@ -12,14 +12,14 @@ const dummyTasks: Task[] = [
     title: "Test Task 1",
     description: "Description 1",
     status: "Not Started",
-    due: "2025-04-21T10:00",
+    due: "2100-04-21T10:00",
   },
   {
     id: 2,
     title: "Test Task 2",
     description: "Description 2",
     status: "In Progress",
-    due: "2025-04-22T10:00",
+    due: "2100-04-22T10:00",
   },
 ];
 
@@ -129,7 +129,7 @@ describe("Edit Tasks", () => {
     title: "Test Task 1 - Edited",
     description: "Edited Description",
     status: "Complete",
-    due: "2024-01-25T09:00",
+    due: "2100-01-25T09:00",
   };
 
   const submitEditedTask = () => {
