@@ -243,7 +243,6 @@ function App() {
                     <i
                       role="button"
                       aria-label="Edit Task"
-                      tabIndex={0}
                       onClick={() => {
                         setFormData({
                           id: task.id,
@@ -261,7 +260,6 @@ function App() {
                     <i
                       role="button"
                       aria-label="Delete Task"
-                      tabIndex={0}
                       onClick={() => {
                         const userChoice = confirm("Delete Task?");
                         if (userChoice) deleteTask(task.id);
