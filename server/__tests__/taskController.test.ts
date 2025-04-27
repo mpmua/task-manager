@@ -234,7 +234,7 @@ describe("Delete Task", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
-      error: `Error deleting task: ${error.message}`,
+      error: `Error deleting task with id of 1: ${error.message}`,
     });
   });
 });

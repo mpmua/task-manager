@@ -73,7 +73,9 @@ export const deleteTask = (req: Request, res: Response) => {
       if (err) {
         return res
           .status(500)
-          .json({ error: `Error deleting task: ${err.message}` });
+          .json({
+            error: `Error deleting task with id of ${id}: ${err.message}`,
+          });
       }
       res.status(200).json({
         success: true,

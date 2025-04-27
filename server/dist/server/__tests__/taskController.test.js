@@ -183,7 +183,7 @@ describe("Delete Task", () => {
         (0, taskController_1.deleteTask)(req, res);
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-            error: `Error deleting task: ${error.message}`,
+            error: `Error deleting task with id of 1: ${error.message}`,
         });
     });
 });

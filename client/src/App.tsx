@@ -202,7 +202,7 @@ function App() {
               You don’t have any tasks yet.
             </p>
           )}
-          <table className="w-full mt-5 text-center table-fixed">
+          <table className="w-full mt-5 text-center table-fixed bg-[#232d3c]">
             <thead>
               <tr className="text-sm">
                 <th className="w-1/6">TITLE</th>
