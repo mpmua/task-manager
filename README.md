@@ -19,6 +19,14 @@ This is a full-stack task management application built with **React**, **Express
 
 ---
 
+## Project Structure
+
+```
+/client   -> React frontend
+/server   -> Express backend
+/dist     -> Built backend output
+```
+
 ## Getting Started
 
 ### Install dependencies
@@ -33,9 +41,18 @@ cd ../server && npm install
 
 ```bash
 # Run below from root directory:
-npm run client    # This will run the React frontend
-npm run server    # This will run the Express backend
+npm run dev    # This will run both the frontend and backend
 ```
+
+## Running Tests
+
+- Unit tests are included for both client and server.
+
+```bash
+npm run test
+```
+
+---
 
 ### Build the app
 
@@ -49,24 +66,6 @@ This will:
 - Build both the frontend and backend projects
 
 ---
-
-## Running Tests
-
-- Unit tests are included for both client and server.
-
-```bash
-npm run test
-```
-
----
-
-## Project Structure
-
-```
-/client   -> React frontend
-/server   -> Express backend
-/dist     -> Built backend output
-```
 
 ## API Documentation
 
