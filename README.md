@@ -112,10 +112,11 @@ This API allows users to create, fetch, edit, and delete tasks.
       "status": "Not Started | In Progress | Complete",
       "due": "2025-05-01T12:00:00.000Z"
     }
-    // More task objects...
   ]
 }
 ```
+
+(Multiple task objects may be returned)
 
 - **Error (500 Internal Server Error)**
 
