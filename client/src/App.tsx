@@ -89,7 +89,7 @@ function App() {
   };
 
   const inputStyles =
-    "py-2 pl-3 mb-4 transition border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";
+    "py-2 pl-3 mb-4 transition border border-gray-400 rounded-md focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200";
 
   // "border border-gray-500 focus:border-gray-900 py-2 pl-3 mb-4 transition border border-gray-300 rounded-md";
 
@@ -104,7 +104,7 @@ function App() {
               editTask(taskId, e);
             }
           }}
-          className="z-10 absolute text-[#3b3b3b] w-2/3 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-[#cbcbcb] top-1/2 left-1/2 rounded-2xl"
+          className="shadow-2xl shadow-gray-800/10 z-10 absolute text-[#3b3b3b] w-2/3 p-10 transform -translate-x-1/2 -translate-y-1/2 bg-[#cbcbcb] top-1/2 left-1/2 rounded-2xl"
         >
           <div className="flex flex-col text-sm">
             <label className="mb-1" htmlFor="title">
@@ -187,24 +187,27 @@ function App() {
         </form>
       )}
 
-      <section className="flex flex-col w-10/12 max-w-3xl">
-        <button
-          className="self-end w-1/4 p-2 mt-2 text-white bg-blue-700 rounded-lg"
-          onClick={() => {
-            setFormVisibility(true);
-          }}
-        >
-          Create Task
-        </button>
+      <section className="flex flex-col">
+        <div className="flex items-center justify-between">
+          <h1 className="text-[#2c2c2c] font-semibold text-3xl">Tasks</h1>
+          <button
+            className="px-4 py-2 text-white bg-blue-700 rounded-lg create-task-btn"
+            onClick={() => {
+              setFormVisibility(true);
+            }}
+          >
+            Create Task
+          </button>
+        </div>
         <section className="overflow-x-auto">
           {tasksList.length === 0 && (
             <p className="absolute text-2xl text-center text-gray-500 -translate-x-1/2 left-1/2 top-1/2">
               You don’t have any tasks yet.
             </p>
           )}
-          <table className="w-full mt-5 text-center table-fixed bg-[#232d3c]">
+          <table className="w-full mt-5 text-center table-fixed bg-[#ffffff] rounded-lg">
             <thead>
-              <tr className="text-sm">
+              <tr className="text-sm text-[#717171]">
                 <th className="w-1/6">TITLE</th>
                 <th className="w-2/6">DESCRIPTION</th>
                 <th className="w-1/6">STATUS</th>
@@ -212,24 +215,24 @@ function App() {
                 <th className="w-1/6"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-[#0f0f0f]">
               {tasksList.map((task) => (
-                <tr className="border-b border-stone-700" key={task.id}>
-                  <td className="overflow-hidden truncate whitespace-nowrap">
+                <tr className="border-b border-stone-200" key={task.id}>
+                  <td className="px-2 overflow-hidden truncate whitespace-nowrap">
                     {task.title}
                   </td>
-                  <td className="overflow-hidden truncate whitespace-nowrap">
+                  <td className="px-2 overflow-hidden truncate whitespace-nowrap">
                     {task.description}
                   </td>
-                  <td className="overflow-hidden truncate whitespace-nowrap">
+                  <td className="px-2 overflow-hidden truncate whitespace-nowrap">
                     <p
                       className={`p-1 rounded-md whitespace-nowrap ${
                         task.status === "Complete"
-                          ? "bg-green-200 text-green-800"
+                          ? "bg-[#afefbb] text-[#00a221]"
                           : task.status === "Not Started"
-                          ? "bg-orange-200 text-orange-800"
+                          ? "bg-[#edc694] text-[#9a5609]"
                           : task.status === "In Progress"
-                          ? "bg-yellow-200 text-yellow-800"
+                          ? "bg-[#cddaff] text-[#007dff]"
                           : "bg-transparent"
                       }`}
                     >

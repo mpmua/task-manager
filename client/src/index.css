@@ -16,15 +16,23 @@
   }
 
   html {
-    background-color: #263345;
+    background-color: #d8d9da;
   }
   body {
     font-family: "Roboto", sans-serif;
     font-weight: 400;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 20px;
   }
 
   th,
   td {
     padding: 1rem 0.2rem 1rem 0;
+  }
+
+  .create-task-btn::before {
+    content: "+";
+    margin-right: 0.5rem;
   }
 }
